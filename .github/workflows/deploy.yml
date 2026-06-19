@@ -1,0 +1,87 @@
+name: Deploy Control Tower
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Docker Login
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and Push
+        uses: docker/build-push-action@v5
+        with:
+          context: ./control-tower
+          push: true
+          # We tag with both 'latest' and the unique run number
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/control-tower:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/control-tower:${{ github.run_number }}
+          build-args: |
+            MONGODB_URI=${{ secrets.MONGODB_URI }}
+            NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}
+            NEXTAUTH_URL=${{ secrets.NEXTAUTH_URL }}
+            JWT_SECRET=${{ secrets.JWT_SECRET }}
+            NEXT_PUBLIC_BACKEND_BASE_URL=${{ secrets.NEXT_PUBLIC_BACKEND_BASE_URL }}
+            NEXT_PUBLIC_EMAILJS_SERVICE_ID=${{ secrets.NEXT_PUBLIC_EMAILJS_SERVICE_ID }}
+            NEXT_PUBLIC_EMAILJS_TEMPLATE_ID=${{ secrets.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID }}
+            NEXT_PUBLIC_EMAILJS_PUBLIC_KEY=${{ secrets.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY }}
+
+  deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    steps:
+      - name: SSH to EC2 and Deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            # 1. Prepare Directory
+            # mkdir -p ~/control-tower
+            # cd ~/control-tower
+
+            mkdir -p ~/control-tower-deploy
+            cd ~/control-tower-deploy
+
+            # 2. Login to Docker Hub
+            echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+
+            docker rm -f control-tower-app || true
+
+            # 3. Create/Update docker-compose.yml
+            # Notice the image now uses the specific run number tag
+            cat <<'EOF' > docker-compose.yml
+            services:
+              next-app:
+                image: ${{ secrets.DOCKERHUB_USERNAME }}/control-tower:${{ github.run_number }}
+                container_name: control-tower-app
+                ports:
+                  - "3000:3000"
+                environment:
+                  - MONGODB_URI=${{ secrets.MONGODB_URI }}
+                  - NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}
+                  - JWT_SECRET=${{ secrets.JWT_SECRET }}
+                  - NEXT_PUBLIC_BACKEND_BASE_URL=${{ secrets.NEXT_PUBLIC_BACKEND_BASE_URL }}
+                  - NEXTAUTH_URL=${{ secrets.NEXTAUTH_URL }}
+                  - AUTH_TRUST_HOST=true
+                  - NODE_ENV=production
+                restart: always
+            EOF
+
+            # 4. Pull the specific new image and recreate
+            docker compose pull next-app
+            docker compose up -d --force-recreate
+            
+            # 5. Clean up old images to prevent disk space issues on EC2
+            docker image prune -a -f

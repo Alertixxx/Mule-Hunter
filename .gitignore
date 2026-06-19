@@ -1,0 +1,52 @@
+# --- GLOBAL ---
+.DS_Store
+.env
+.vscode/
+.idea/
+
+# --- PYTHON (AI Engine & Visual Analytics) ---
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+venv/
+env/
+.pytest_cache/
+*.log
+
+# --- NODE.JS (Control Tower) ---
+node_modules/
+dist/
+.next/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.env.local
+
+# --- JAVA (Banking Core & Security) ---
+*.class
+*.jar
+*.war
+target/
+.mvn/
+*.iml
+.gradle/
+build/
+
+# --- DATA (Shared) ---
+shared-data/*.csv
+shared-data/*.json
+!shared-data/.keep
+
+# Allow required AI graph files
+!shared-data/nodes.csv
+!shared-data/transactions.csv
+!shared-data/eif_features.csv
+
+mule-va
+mule-ai
+myenv
+mule-ai-311
+
+venv311
+eif/

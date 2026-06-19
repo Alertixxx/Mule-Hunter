@@ -1,0 +1,38 @@
+{
+  "model": "EIF",
+  "version": "v6",
+  "raw_feature_dim": 8,
+  "expanded_feature_dim": 14,
+  "threshold": 0.4690913382331772,
+  "threshold_direction": "gte",
+  "threshold_percentile": 88,
+  "ntrees": 100,
+  "sample_size": 256,
+  "extension_level": 0,
+  "raw_features": [
+    "velocity_score",
+    "burst_score",
+    "suspicious_neighbor_count",
+    "ip_reuse_count",
+    "ja3_reuse_count",
+    "community_fraud_rate_feat",
+    "ring_membership_feat",
+    "network_risk_score"
+  ],
+  "expanded_features": [
+    "velocity",
+    "burst",
+    "neighbors",
+    "ip",
+    "ja3",
+    "comm_fraud",
+    "ring",
+    "net_risk",
+    "comm_ring",
+    "comm_burst",
+    "comm_velocity",
+    "neighbor_comm",
+    "ip_comm",
+    "velocity_burst"
+  ]
+}
