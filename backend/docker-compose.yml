@@ -1,0 +1,13 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8082:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      JWT_SECRET: ${JWT_SECRET}
+      AI_SERVICE_URL: ${AI_SERVICE_URL}
+      SPRING_DATA_MONGODB_URI: ${SPRING_DATA_MONGODB_URI}
+      VISUAL_INTERNAL_API_KEY: ${VISUAL_INTERNAL_API_KEY}
