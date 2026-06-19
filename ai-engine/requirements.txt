@@ -1,0 +1,17 @@
+﻿
+# DO NOT pip install -r requirements.txt directly
+# Install in order — see README for instructions
+# torch must be installed before torch-scatter/torch-sparse
+
+fastapi==0.115.0
+uvicorn[standard]==0.30.6
+pydantic==2.8.2
+torch==2.3.1
+torch-geometric==2.5.3
+# torch-scatter and torch-sparse: install via:
+# pip install torch-scatter torch-sparse -f https://data.pyg.org/whl/torch-2.3.1+cpu.html
+pandas==2.2.2
+numpy==1.26.4
+scikit-learn==1.5.1
+networkx==3.3
+httpx 
