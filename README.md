@@ -806,7 +806,6 @@ Location nodes (shared `addr1` values) form spurious cycles through high-volume 
 |:-----|:-----|:----------------|
 | **Muskan** | Lead AI Engineer | GraphSAGE architecture · IEEE-CIS data pipeline · GNN training · inference service |
 | **Rupali** | ML & Visualization | Extended Isolation Forest · SHAP explainability · Canvas particle graph |
-| **Prisha** | Backend Architect | Spring Boot 14-step pipeline · AI service integration · circuit breakers |
 | **Ratnesh** | Security Architect | JA3 TLS fingerprinting · Merkle tree ledger · blockchain forensics |
 | **Manya** | Full Stack Lead | Next.js dashboard · real-time UX · all 9 live-wired sections · deployment |
 
